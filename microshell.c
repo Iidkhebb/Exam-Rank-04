@@ -1,6 +1,4 @@
-#include <unistd.h>
-#include <sys/wait.h>
-#include <string.h>
+#include <libc.h>
 
 int	print_error(char *str, char *arg)
 {
