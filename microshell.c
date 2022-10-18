@@ -1,14 +1,13 @@
 #include <libc.h>
 
-int	print_error(char *str, char *arg)
+int	declare(char *str, char *arg)
 {
 	while (*str)
 		write(2, str++, 1);
 	if (arg)
 		while(*arg)
 			write(2, arg++, 1);
-	write(2, "\n", 1);
-	return (1);
+	return (write(2, "\n", 1), 1);
 }
 
 int ft_execute(char *av[], int i, int sv, char *env[])
@@ -17,7 +16,7 @@ int ft_execute(char *av[], int i, int sv, char *env[])
 	dup2(sv, 0);
 	close(sv);
 	execve(av[0], av, env);
-	return (print_error("error: cannot execute ", av[0]));
+	return (declare("error: cannot execute ", av[0]));
 }
 
 int	main(int ac, char *av[], char *env[])
@@ -37,9 +36,9 @@ int	main(int ac, char *av[], char *env[])
 			i++;
 		if (!strcmp(av[0], "cd")) {
 			if (i != 2)
-				print_error("error: cd: bad arguments", NULL);
+				declare("error: cd: bad arguments", NULL);
 			else if (chdir(av[1]) != 0)
-				print_error("error: cd: cannot change directory to ", av[1]);
+				declare("error: cd: cannot change directory to ", av[1]);
 		}
 		else if (i != 0 && (av[i] == NULL || strcmp(av[i], ";") == 0)) {
 			if (fork() == 0) {
@@ -68,6 +67,5 @@ int	main(int ac, char *av[], char *env[])
 			}
 		}
 	}
-	close(sv);
-	return (0);
+	return (close(sv), 0);
 }
