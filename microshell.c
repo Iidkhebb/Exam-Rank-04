@@ -26,8 +26,7 @@ int	main(int ac, char *av[], char *env[])
 
 	i = 0;
 	TMP = dup(0);
-	while (av[i] && av[i + 1])
-	{
+	while (av[i] && av[i + 1]) {
 		av = &av[i + 1];
 		i = 0;
 		while (av[i] && strcmp(av[i], ";") && strcmp(av[i], "|"))
