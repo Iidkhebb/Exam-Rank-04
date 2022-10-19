@@ -10,11 +10,11 @@ int	declare(char *str, char *arg)
 	return (write(2, "\n", 1), 1);
 }
 
-int ft_execute(char *av[], int i, int sv, char *env[])
+int ft_ex(char *av[], int i, int TMP, char *env[])
 {
 	av[i] = NULL;
-	dup2(sv, 0);
-	close(sv);
+	dup2(TMP, 0);
+	close(TMP);
 	execve(av[0], av, env);
 	return (declare("error: cannot execute ", av[0]));
 }
@@ -23,14 +23,14 @@ int	main(int ac, char *av[], char *env[])
 {
 	int	i;
 	int fd[2];
-	int sv;
+	int TMP;
 	(void)ac;
 
 	i = 0;
-	sv = dup(0);
-	while (av[i] && av[i + 1]) //check if the end is reached
+	TMP = dup(0);
+	while (av[i] && av[i + 1])
 	{
-		av = &av[i + 1];	//the new av start after the ; or |
+		av = &av[i + 1];
 		i = 0;
 		while (av[i] && strcmp(av[i], ";") && strcmp(av[i], "|"))
 			i++;
@@ -40,32 +40,30 @@ int	main(int ac, char *av[], char *env[])
 			else if (chdir(av[1]) != 0)
 				declare("error: cd: cannot change directory to ", av[1]);
 		}
-		else if (i != 0 && (av[i] == NULL || strcmp(av[i], ";") == 0)) {
-			if (fork() == 0) {
-				if (ft_execute(av, i, sv, env))
+		else if  (i != 0 && (av[i] == NULL || !strcmp(av[i], ";"))) {
+			if (!fork()) {
+				if (ft_ex(av, i, TMP, env))
 					return (1);
 			}
 			else {
-				close(sv);
+				close(TMP);
 				while(waitpid(-1, NULL, 0) != -1);
-				sv = dup(1);
 			}
+			TMP = dup(0);
 		}
-		else if(i != 0 && strcmp(av[i], "|") == 0) {
+		else if (i != 0 && strcmp(av[i], "|") == 0) {
 			pipe(fd);
-			if (fork() == 0) {
+			if (!fork()) {
 				dup2(fd[1], 1);
-				close(fd[0]);
-				close(fd[1]);
-				if (ft_execute(av, i, sv, env))
+				close(fd[0]), close(fd[1]);
+				if (ft_ex(av, i, TMP, env))
 					return (1);
 			}
 			else {
-				close(fd[1]);
-				close(sv);
-				sv = fd[0];
+				close(fd[1]), close(TMP);
+				TMP = fd[0];
 			}
 		}
 	}
-	return (close(sv), 0);
+	return (close(TMP), 0);
 }
