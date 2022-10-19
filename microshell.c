@@ -51,7 +51,7 @@ int	main(int ac, char *av[], char *env[])
 			}
 			TMP = dup(0);
 		}
-		else if (i != 0 && strcmp(av[i], "|") == 0) {
+		else if (i != 0 && !strcmp(av[i], "|")) {
 			pipe(fd);
 			if (!fork()) {
 				dup2(fd[1], 1);
