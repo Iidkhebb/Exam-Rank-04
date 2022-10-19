@@ -21,9 +21,7 @@ int ft_ex(char *av[], int i, int TMP, char *env[])
 
 int	main(int ac, char *av[], char *env[])
 {
-	int	i;
-	int fd[2];
-	int TMP;
+	int	i, fd[2], TMP;
 	(void)ac;
 
 	i = 0;
